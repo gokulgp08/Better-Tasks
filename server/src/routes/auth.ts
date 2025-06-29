@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { body, validationResult } from 'express-validator';
 import User from '../models/User.js';
 import { authenticate, AuthRequest } from '../middleware/auth.js';
+import { Request, Response } from 'express';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.post('/register', [
     .optional()
     .isIn(['admin', 'manager', 'user'])
     .withMessage('Invalid role')
-], async (req, res) => {
+], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -78,7 +79,7 @@ router.post('/login', [
   body('password')
     .notEmpty()
     .withMessage('Password is required')
-], async (req, res) => {
+], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -124,7 +125,7 @@ router.post('/login', [
 });
 
 // Get current user profile
-router.get('/me', authenticate, async (req: AuthRequest, res) => {
+router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
   try {
     if (!req.user) {
       return res.status(401).json({ message: 'User not authenticated' });
@@ -154,7 +155,7 @@ router.put('/profile', authenticate, [
     .isEmail()
     .normalizeEmail()
     .withMessage('Please provide a valid email')
-], async (req: AuthRequest, res) => {
+], async (req: AuthRequest, res: Response) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
