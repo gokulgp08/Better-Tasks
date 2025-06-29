@@ -18,9 +18,11 @@ better-tasks-app/
 - **React 18** with TypeScript for type safety
 - **Tailwind CSS** for modern, responsive styling
 - **React Router** for client-side routing
-- **Axios** for API communication
+- **Axios** for API communication with proper pagination handling
 - **Context API** for state management
 - **Lucide React** for beautiful icons
+- **Responsive sidebar** with collapsible functionality
+- **Optimized data fetching** with proper error handling
 
 ### Backend (`/server`)
 - **Express.js** with TypeScript for robust API development
@@ -68,6 +70,8 @@ better-tasks-app/
 - **Overdue task alerts**
 - **Recent activity feed**
 - **Quick action buttons**
+- **Responsive layout** that works on all device sizes
+- **Optimized data loading** with proper loading states
 
 ## 🛠️ Getting Started
 
@@ -135,6 +139,20 @@ After seeding the database, you can use these credentials to log in:
 - **Admin**: admin@example.com / admin123
 - **Manager**: manager@example.com / manager123
 - **User**: user@example.com / user123
+
+## 🆕 Recent Updates
+
+### UI/UX Improvements
+- Added collapsible sidebar with logo display
+- Improved responsive design for better mobile experience
+- Fixed layout spacing and padding issues
+- Enhanced form validation and error messages
+
+### Bug Fixes
+- Fixed API response handling across all components
+- Resolved issues with paginated data loading
+- Improved error handling for failed API requests
+- Fixed mobile navigation and menu behavior
 
 ## 📁 Project Structure
 
