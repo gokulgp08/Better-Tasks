@@ -11,6 +11,8 @@ import Notifications from './pages/Notifications';
 import Search from './pages/Search';
 import ActivityLogs from './pages/ActivityLogs';
 import LoadingSpinner from './components/LoadingSpinner';
+import Users from './pages/Users';
+import CreateUser from './pages/CreateUser';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -22,6 +24,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }
 
   return <Layout>{children}</Layout>;
+};
+
+// Admin Route Component
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+
+  if (!user || user.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 // Public Route Component
@@ -71,6 +84,12 @@ function App() {
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/search" element={<Search />} />
         <Route path="/activity-logs" element={<ActivityLogs />} />
+        <Route path="/users" element={<Users />} />
+        <Route path="/users/create" element={
+          <AdminRoute>
+            <CreateUser />
+          </AdminRoute>
+        } />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>
     </Routes>

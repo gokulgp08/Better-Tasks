@@ -10,7 +10,7 @@ const router = express.Router();
 router.use(authenticate);
 
 // Get all users (admin and manager only)
-router.get('/', async (req: AuthRequest, res: Response) => {
+router.get('/', authorize('admin', 'manager'), async (req: AuthRequest, res: Response) => {
   try {
     const { page = 1, limit = 10, role, search } = req.query;
     const query: any = { isActive: true };

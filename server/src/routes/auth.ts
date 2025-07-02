@@ -20,10 +20,7 @@ router.post('/register', [
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long'),
-  body('role')
-    .optional()
-    .isIn(['admin', 'manager', 'user'])
-    .withMessage('Invalid role')
+
 ], async (req: Request, res: Response) => {
   try {
     const errors = validationResult(req);
@@ -34,7 +31,7 @@ router.post('/register', [
       });
     }
 
-    const { name, email, password, role = 'user' } = req.body;
+    const { name, email, password } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -48,7 +45,7 @@ router.post('/register', [
       name,
       email,
       passwordHash: password, // Will be hashed by pre-save middleware
-      role
+      // Role will be defaulted to 'user' by the schema
     });
 
     await user.save();

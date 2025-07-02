@@ -5,6 +5,7 @@ import {
   LayoutDashboard, 
   CheckSquare, 
   Users, 
+  UserCog,
   Phone, 
   Bell, 
   Search, 
@@ -32,6 +33,10 @@ function Layout({ children }: LayoutProps) {
     { name: 'Search', href: '/search', icon: Search },
     { name: 'Activity Logs', href: '/activity-logs', icon: History },
   ];
+
+  if (user?.role === 'admin') {
+    navigation.splice(3, 0, { name: 'Users', href: '/users', icon: UserCog });
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

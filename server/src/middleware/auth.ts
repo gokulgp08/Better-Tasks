@@ -19,6 +19,7 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
     
     const user = await User.findById(decoded.userId).select('-passwordHash');
+    console.log('[Auth Middleware] Fetched user from DB:', { id: user?._id, role: user?.role });
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Invalid token or user not active.' });
     }
@@ -32,13 +33,16 @@ export const authenticate = async (req: AuthRequest, res: Response, next: NextFu
 
 export const authorize = (...roles: string[]) => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
+    console.log(`[Auth Middleware] Authorizing for roles: ${roles.join(', ')}`);
+    console.log(`[Auth Middleware] User attempting access:`, { id: req.user?._id, role: req.user?.role });
+
     if (!req.user) {
       return res.status(401).json({ message: 'Access denied. User not authenticated.' });
     }
 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({ 
-        message: `Access denied. Required roles: ${roles.join(', ')}. Your role: ${req.user.role}` 
+        message: `Access denied. Required roles: ${roles.join(', ')}. Your role is '${req.user.role}'.` 
       });
     }
 

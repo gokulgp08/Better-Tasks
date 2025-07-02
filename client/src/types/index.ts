@@ -17,11 +17,12 @@ export interface Customer {
 // Use for creating or updating a customer, where _id and createdAt are not required.
 export type CustomerInput = Omit<Customer, '_id' | 'createdAt'>;
 
-export interface User {
+export interface IUser {
   _id: string;
   name: string;
   email: string;
   role: 'user' | 'manager' | 'admin';
+  isActive: boolean;
   createdAt: string;
 }
 
