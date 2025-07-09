@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface ITask extends Document {
   title: string;
   description: string;
-  category: string;
+  category: mongoose.Types.ObjectId;
   priority: 'low' | 'medium' | 'high' | 'urgent';
   status: 'todo' | 'in-progress' | 'completed';
   dueDate: Date;
@@ -39,10 +39,9 @@ const taskSchema = new Schema<ITask>({
     maxlength: [1000, 'Description cannot exceed 1000 characters']
   },
   category: {
-    type: String,
-    required: [true, 'Category is required'],
-    trim: true,
-    maxlength: [50, 'Category cannot exceed 50 characters']
+    type: Schema.Types.ObjectId,
+    ref: 'TaskCategory',
+    required: [true, 'Category is required']
   },
   priority: {
     type: String,

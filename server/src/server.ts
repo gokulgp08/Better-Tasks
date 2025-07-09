@@ -8,6 +8,7 @@ import taskRoutes from './routes/tasks.js';
 import customerRoutes from './routes/customers.js';
 import callRoutes from './routes/calls.js';
 import notificationRoutes from './routes/notifications.js';
+import taskCategoryRoutes from './routes/taskCategories.js';
 import searchRoutes from './routes/search.js';
 import { scheduleTaskReminders } from './jobs/reminders.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -59,6 +60,7 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/calls', callRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/task-categories', taskCategoryRoutes);
 app.use('/api/search', searchRoutes);
 
 // Health check endpoint

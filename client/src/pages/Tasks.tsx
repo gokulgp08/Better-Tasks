@@ -4,8 +4,10 @@ import { tasksAPI } from '../services/api';
 import TaskCard from '../components/TaskCard';
 import { Task, TaskInput } from '../types';
 import TaskModal from '../components/TaskModal';
+import { useAuth } from '../contexts/AuthContext';
 
 function Tasks() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,9 +33,9 @@ function Tasks() {
 
   const handleStatusChange = async (taskId: string, status: string) => {
     try {
-      await tasksAPI.update(taskId, { status });
+      const response = await tasksAPI.updateTaskStatus(taskId, status);
       setTasks(tasks.map(task => 
-        task._id === taskId ? { ...task, status: status as any } : task
+        task._id === taskId ? response.data.task : task
       ));
     } catch (error) {
       console.error('Error updating task status:', error);
@@ -51,24 +53,13 @@ function Tasks() {
     }
   };
 
-  const handleSaveTask = async (taskData: Partial<Task>) => {
+  const handleSaveTask = async (taskData: TaskInput) => {
     try {
-      // Create a payload that conforms to the API's expectations
-      const apiPayload = {
-        ...taskData,
-        assignedTo: typeof taskData.assignedTo === 'object' && taskData.assignedTo !== null
-          ? taskData.assignedTo._id
-          : taskData.assignedTo,
-        customer: typeof taskData.customer === 'object' && taskData.customer !== null
-          ? taskData.customer._id
-          : taskData.customer,
-      };
-
       if (editingTask) {
-        const response = await tasksAPI.update(editingTask._id, apiPayload);
+        const response = await tasksAPI.update(editingTask._id, taskData);
         setTasks(tasks.map(t => (t._id === editingTask._id ? response.data.task : t)));
       } else {
-        const response = await tasksAPI.create(apiPayload as TaskInput);
+        const response = await tasksAPI.create(taskData);
         setTasks([response.data.task, ...tasks]);
       }
       setIsModalOpen(false);
@@ -109,10 +100,12 @@ function Tasks() {
           <h1 className="text-2xl font-bold text-gray-900">Tasks</h1>
           <p className="text-gray-600">Manage and track your tasks</p>
         </div>
-        <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="btn-primary flex items-center">
-          <Plus className="w-4 h-4 mr-2" />
-          New Task
-        </button>
+        {user && (user.role === 'admin' || user.role === 'manager') && (
+          <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="btn-primary flex items-center">
+            <Plus className="w-4 h-4 mr-2" />
+            New Task
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -164,8 +157,8 @@ function Tasks() {
               key={task._id}
               task={task}
               onStatusChange={handleStatusChange}
-              onDelete={handleDeleteTask}
-              onEdit={(task) => { setEditingTask(task); setIsModalOpen(true); }}
+              onDelete={user && (user.role === 'admin' || user.role === 'manager') ? handleDeleteTask : undefined}
+              onEdit={user && (user.role === 'admin' || user.role === 'manager') ? (task) => { setEditingTask(task); setIsModalOpen(true); } : undefined}
             />
           ))}
         </div>
@@ -178,13 +171,17 @@ function Tasks() {
           <p className="text-gray-600 mb-4">
             {searchTerm || statusFilter !== 'all' || priorityFilter !== 'all'
               ? 'Try adjusting your search or filters'
-              : 'Get started by creating your first task'
+              : user && (user.role === 'admin' || user.role === 'manager') 
+                ? 'Get started by creating your first task' 
+                : 'No tasks assigned to you.'
             }
           </p>
-          <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="btn-primary">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Task
-          </button>
+          {user && (user.role === 'admin' || user.role === 'manager') && (
+            <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="btn-primary">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Task
+            </button>
+          )}
         </div>
       )}
 

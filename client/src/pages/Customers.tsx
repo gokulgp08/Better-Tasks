@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { Plus, Search, Building2, Phone, Mail } from 'lucide-react';
 import { customersAPI } from '../services/api';
 import CustomerModal from '../components/CustomerModal';
 import { Customer, CustomerInput } from '../types';
 
 function Customers() {
+  const { user } = useAuth();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -80,10 +82,12 @@ function Customers() {
           <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
           <p className="text-gray-600">Manage your customer database</p>
         </div>
-        <button onClick={() => { setEditingCustomer(null); setIsModalOpen(true); }} className="btn-primary flex items-center">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Customer
-        </button>
+        {user?.role === 'admin' && (
+          <button onClick={() => { setEditingCustomer(null); setIsModalOpen(true); }} className="btn-primary flex items-center">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Customer
+          </button>
+        )}
       </div>
 
       {/* Search */}
@@ -128,6 +132,22 @@ function Customers() {
                   <span className="font-medium text-gray-700">Contacts:</span>
                   <span className="ml-2 text-gray-600">{customer.contacts.length}</span>
                 </div>
+                {customer.url && (
+                  <div className="text-sm truncate">
+                    <span className="font-medium text-gray-700">URL:</span>
+                    <a href={customer.url} target="_blank" rel="noopener noreferrer" className="ml-2 text-primary-600 hover:underline">
+                      {customer.url}
+                    </a>
+                  </div>
+                )}
+                {customer.installationDate && (
+                  <div className="text-sm">
+                    <span className="font-medium text-gray-700">Installed:</span>
+                    <span className="ml-2 text-gray-600">
+                      {new Date(customer.installationDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {customer.contacts.length > 0 && (
@@ -158,12 +178,16 @@ function Customers() {
                   <button className="text-sm text-primary-600 hover:text-primary-800 font-medium">
                     View
                   </button>
-                  <button onClick={() => { setEditingCustomer(customer); setIsModalOpen(true); }} className="text-sm text-gray-600 hover:text-gray-800 font-medium">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDeleteCustomer(customer._id)} className="text-sm text-danger-600 hover:text-danger-800 font-medium">
-                    Delete
-                  </button>
+                  {(user?.role === 'admin' || user?.role === 'manager') && (
+                    <>
+                      <button onClick={() => { setEditingCustomer(customer); setIsModalOpen(true); }} className="text-sm text-gray-600 hover:text-gray-800 font-medium">
+                        Edit
+                      </button>
+                      <button onClick={() => handleDeleteCustomer(customer._id)} className="text-sm text-danger-600 hover:text-danger-800 font-medium">
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -181,10 +205,12 @@ function Customers() {
               : 'Get started by adding your first customer'
             }
           </p>
-          <button onClick={() => { setEditingCustomer(null); setIsModalOpen(true); }} className="btn-primary">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Customer
-          </button>
+          {user?.role === 'admin' && (
+            <button onClick={() => { setEditingCustomer(null); setIsModalOpen(true); }} className="btn-primary">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Customer
+            </button>
+          )}
         </div>
       )}
 

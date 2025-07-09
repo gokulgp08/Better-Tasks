@@ -3,6 +3,8 @@ import mongoose, { Document, Schema } from 'mongoose';
 export interface ICustomer extends Document {
   companyName: string;
   companyType: string;
+  url?: string;
+  installationDate?: Date;
   gst?: string;
   contacts: {
     name: string;
@@ -37,6 +39,13 @@ const customerSchema = new Schema<ICustomer>({
     required: [true, 'Company type is required'],
     trim: true,
     maxlength: [100, 'Company type cannot exceed 100 characters']
+  },
+  url: {
+    type: String,
+    trim: true
+  },
+  installationDate: {
+    type: Date
   },
   gst: {
     type: String,

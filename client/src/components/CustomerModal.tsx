@@ -14,6 +14,8 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ isOpen, onClose, onSave, 
     companyName: '',
     companyType: '',
     gst: '',
+    url: '',
+    installationDate: '',
     contacts: [{ name: '', email: '', phone: '', designation: '' }],
   };
 
@@ -21,7 +23,10 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ isOpen, onClose, onSave, 
 
   useEffect(() => {
     if (customerToEdit) {
-      setCustomer(customerToEdit);
+      const installationDate = customerToEdit.installationDate
+        ? new Date(customerToEdit.installationDate).toISOString().split('T')[0]
+        : '';
+      setCustomer({ ...customerToEdit, installationDate });
     } else {
       setCustomer(emptyCustomer);
     }
@@ -75,7 +80,15 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ isOpen, onClose, onSave, 
             </div>
             <div>
               <label htmlFor="gst" className="block text-sm font-medium text-gray-700">GST Number</label>
-              <input type="text" id="gst" name="gst" value={customer.gst} onChange={handleChange} className="input-field" />
+              <input type="text" id="gst" name="gst" value={customer.gst || ''} onChange={handleChange} className="input-field" />
+            </div>
+            <div>
+              <label htmlFor="url" className="block text-sm font-medium text-gray-700">Website URL</label>
+              <input type="url" id="url" name="url" value={customer.url || ''} onChange={handleChange} className="input-field" />
+            </div>
+            <div>
+              <label htmlFor="installationDate" className="block text-sm font-medium text-gray-700">Installation Date</label>
+              <input type="date" id="installationDate" name="installationDate" value={customer.installationDate || ''} onChange={handleChange} className="input-field" />
             </div>
           </div>
 

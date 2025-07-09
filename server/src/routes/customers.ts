@@ -90,7 +90,7 @@ router.get('/:id', async (req: AuthRequest, res: Response) => {
 });
 
 // Create new customer
-router.post('/', [
+router.post('/', authorize('admin'), [
   body('companyName')
     .trim()
     .isLength({ min: 1, max: 200 })
@@ -201,6 +201,8 @@ router.put('/:id', authorize('admin', 'manager'), [
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage('Company type must be between 1 and 100 characters'),
+  body('url').optional().trim().isURL().withMessage('Please enter a valid URL'),
+  body('installationDate').optional().isISO8601().toDate().withMessage('Please enter a valid date'),
   body('gst')
     .optional()
     .matches(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
@@ -221,7 +223,7 @@ router.put('/:id', authorize('admin', 'manager'), [
     .withMessage('Invalid contact email'),
   body('contacts.*.phone')
     .optional()
-    .matches(/^[\+]?[1-9][\d]{0,15}$/)
+    .matches(/^[^\\s]{5,15}$/)
     .withMessage('Invalid phone number'),
   body('contacts.*.designation')
     .optional()
@@ -251,7 +253,7 @@ router.put('/:id', authorize('admin', 'manager'), [
     }
 
     const updates: any = {};
-    const allowedFields = ['companyName', 'companyType', 'gst', 'contacts', 'address', 'notes'];
+    const allowedFields = ['companyName', 'companyType', 'gst', 'contacts', 'address', 'notes', 'url', 'installationDate'];
     
     for (const field of allowedFields) {
       if (req.body[field] !== undefined) {

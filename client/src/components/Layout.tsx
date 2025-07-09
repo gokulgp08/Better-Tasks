@@ -12,7 +12,8 @@ import {
   History, // Add History icon for activity logs
   LogOut,
   Menu,
-  X
+  X,
+  Shapes // Add Shapes icon for categories
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -36,6 +37,13 @@ function Layout({ children }: LayoutProps) {
 
   if (user?.role === 'admin') {
     navigation.splice(3, 0, { name: 'Users', href: '/users', icon: UserCog });
+  }
+
+  if (user?.role === 'admin' || user?.role === 'manager') {
+    const tasksIndex = navigation.findIndex(item => item.name === 'Tasks');
+    if (tasksIndex !== -1) {
+      navigation.splice(tasksIndex + 1, 0, { name: 'Task Categories', href: '/task-categories', icon: Shapes });
+    }
   }
 
   const toggleMobileMenu = () => {

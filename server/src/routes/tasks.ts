@@ -136,7 +136,7 @@ router.get('/:id', async (req: AuthRequest, res: Response) => {
 });
 
 // Create new task
-router.post('/', [
+router.post('/', authorize(['admin', 'manager']), [
   body('title')
     .trim()
     .isLength({ min: 1, max: 200 })
@@ -230,7 +230,7 @@ router.post('/', [
 });
 
 // Update task
-router.put('/:id', [
+router.put('/:id', authorize(['admin', 'manager']), [
   body('title')
     .optional()
     .trim()
@@ -574,8 +574,43 @@ router.delete('/:taskId/attachments/:attachmentId', async (req: AuthRequest, res
   }
 });
 
+// Update task status
+router.patch('/:id/status', canAccessTask, [
+  body('status').isIn(['pending', 'in-progress', 'completed']).withMessage('Invalid status')
+], async (req: AuthRequest, res: Response) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ message: 'Validation failed', errors: errors.array() });
+    }
+
+    const { status } = req.body;
+    const task = req.task!;
+
+    task.status = status;
+    await task.save();
+
+    // Log activity
+    if (req.user) {
+      logActivity({
+        user: req.user._id,
+        action: 'UPDATE_TASK_STATUS',
+        entity: 'Task',
+        entityId: task._id,
+        details: { status: task.status }
+      });
+    }
+
+    res.json({ message: 'Task status updated successfully', task });
+
+  } catch (error) {
+    console.error('Update task status error:', error);
+    res.status(500).json({ message: 'Failed to update task status', error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
 // Delete task
-router.delete('/:id', async (req: AuthRequest, res: Response) => {
+router.delete('/:id', authorize(['admin', 'manager']), async (req: AuthRequest, res: Response) => {
   try {
     const taskId = req.params.id;
     const task = await Task.findById(taskId);
@@ -584,10 +619,7 @@ router.delete('/:id', async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
-    // Only admins, managers, and task creators can delete tasks
-    if (req.user?.role === 'user' && task.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'Access denied' });
-    }
+
 
     // Log activity
     if (req.user) {

@@ -9,6 +9,8 @@ export interface Customer {
   _id: string;
   companyName: string;
   companyType: string;
+  url?: string;
+  installationDate?: string;
   gst: string;
   contacts: CustomerContact[];
   createdAt: string;
@@ -26,11 +28,35 @@ export interface IUser {
   createdAt: string;
 }
 
+export interface TaskCategory {
+  _id: string;
+  name: string;
+  description?: string;
+}
+
+export interface Attachment {
+  _id: string;
+  filename: string;
+  path: string;
+  mimetype: string;
+  size: number;
+}
+
+export interface Comment {
+  _id: string;
+  author: {
+    _id: string;
+    name: string;
+  };
+  text: string;
+  createdAt: string;
+}
+
 export interface Task {
   _id: string;
   title: string;
   description: string;
-  category: string;
+  category: TaskCategory;
   status: 'todo' | 'in-progress' | 'completed';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   dueDate: string;
@@ -42,14 +68,15 @@ export interface Task {
     _id: string;
     companyName: string;
   };
-  attachments: any[];
-  comments: any[];
+  attachments: Attachment[];
+  comments: Comment[];
   createdAt: string;
 }
 
-export type TaskInput = Omit<Task, '_id' | 'createdAt' | 'assignedTo' | 'customer' | 'attachments' | 'comments'> & {
+export type TaskInput = Omit<Task, '_id' | 'createdAt' | 'assignedTo' | 'customer' | 'attachments' | 'comments' | 'category'> & {
   assignedTo: string; // User ID
   customer?: string; // Customer ID
+  category: string; // Category ID
 };
 
 export interface Call {

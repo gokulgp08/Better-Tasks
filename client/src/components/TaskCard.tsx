@@ -87,18 +87,22 @@ function TaskCard({ task, onEdit, onDelete, onStatusChange }: TaskCardProps) {
         </select>
 
         <div className="flex space-x-2">
-          <button
-            onClick={() => onEdit?.(task)}
-            className="text-sm text-primary-600 hover:text-primary-800 font-medium"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => onDelete?.(task._id)}
-            className="text-sm text-danger-600 hover:text-danger-800 font-medium"
-          >
-            Delete
-          </button>
+          {onEdit && (
+            <button
+              onClick={() => onEdit(task)}
+              className="text-sm text-primary-600 hover:text-primary-800 font-medium"
+            >
+              Edit
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(task._id)}
+              className="text-sm text-danger-600 hover:text-danger-800 font-medium"
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
     </div>

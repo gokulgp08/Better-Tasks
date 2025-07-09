@@ -13,6 +13,7 @@ import ActivityLogs from './pages/ActivityLogs';
 import LoadingSpinner from './components/LoadingSpinner';
 import Users from './pages/Users';
 import CreateUser from './pages/CreateUser';
+import TaskCategories from './pages/TaskCategories';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -31,6 +32,17 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuth();
 
   if (!user || user.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Admin or Manager Route Component
+const AdminOrManagerRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuth();
+
+  if (!user || (user.role !== 'admin' && user.role !== 'manager')) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -89,6 +101,11 @@ function App() {
           <AdminRoute>
             <CreateUser />
           </AdminRoute>
+        } />
+        <Route path="/task-categories" element={
+          <AdminOrManagerRoute>
+            <TaskCategories />
+          </AdminOrManagerRoute>
         } />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Route>

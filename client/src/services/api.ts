@@ -44,7 +44,16 @@ export const tasksAPI = {
   getById: (id: string) => api.get(`/tasks/${id}`),
   create: (task: any) => api.post('/tasks', task),
   update: (id: string, task: any) => api.put(`/tasks/${id}`, task),
+  updateTaskStatus: (id: string, status: string) => api.patch(`/tasks/${id}/status`, { status }),
   delete: (id: string) => api.delete(`/tasks/${id}`),
+  addComment: (taskId: string, text: string) => api.post(`/tasks/${taskId}/comments`, { text }),
+  deleteComment: (taskId: string, commentId: string) => api.delete(`/tasks/${taskId}/comments/${commentId}`),
+  uploadAttachment: (taskId: string, formData: FormData) => api.post(`/tasks/${taskId}/attachments`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  deleteAttachment: (taskId: string, attachmentId: string) => api.delete(`/tasks/${taskId}/attachments/${attachmentId}`),
 };
 
 export const customersAPI = {
@@ -53,6 +62,13 @@ export const customersAPI = {
   create: (customer: any) => api.post('/customers', customer),
   update: (id: string, customer: any) => api.put(`/customers/${id}`, customer),
   delete: (id: string) => api.delete(`/customers/${id}`),
+};
+
+export const taskCategoriesAPI = {
+  getAll: () => api.get('/task-categories'),
+  create: (data: { name: string; description?: string }) => api.post('/task-categories', data),
+  update: (id: string, data: { name: string; description?: string }) => api.put(`/task-categories/${id}`, data),
+  delete: (id: string) => api.delete(`/task-categories/${id}`),
 };
 
 export const callsAPI = {
